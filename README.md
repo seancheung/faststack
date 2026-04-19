@@ -18,6 +18,16 @@ fs-idea  →  fs-req  →  fs-prod  →  fs-ui  →  fs-tech  →  fs-tasks  →
 ```
 /plugin marketplace add seancheung/faststack
 /plugin install faststack
+/reload-plugins
+```
+
+## 更新
+
+有新版本发布时，在 Claude Code 中运行：
+
+```
+/plugin marketplace update faststack
+/reload-plugins
 ```
 
 ## 使用
