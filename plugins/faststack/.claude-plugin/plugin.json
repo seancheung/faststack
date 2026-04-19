@@ -1,0 +1,19 @@
+{
+  "name": "faststack",
+  "version": "0.1.0",
+  "description": "从想法到上线的全流程 vibecoding 工具包：交互式生成需求 / 产品 / 设计 / 技术 / 任务文档，并按任务清单自动开发。",
+  "author": {
+    "name": "Sean Cheung",
+    "url": "https://github.com/seancheung"
+  },
+  "homepage": "https://github.com/seancheung/faststack",
+  "repository": "https://github.com/seancheung/faststack",
+  "license": "MIT",
+  "keywords": [
+    "vibecoding",
+    "workflow",
+    "prd",
+    "tasks",
+    "design"
+  ]
+}
