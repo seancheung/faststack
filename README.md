@@ -22,12 +22,28 @@ fs-idea  →  fs-req  →  fs-prod  →  fs-ui  →  fs-tech  →  fs-tasks  →
 
 ## 使用
 
-**第一次使用**：输入 `/fs-start`，它会引导你选择 **文档目录**（默认 `.faststack/`），并在项目根生成 `.faststack.yml`：
+**第一次使用**：输入 `/fs-start`，它会引导你选择 **模式**（full / lite）和 **文档目录**（默认 `.faststack/`），并在项目根生成 `.faststack.yml`：
 
 ```yaml
 version: 1
+mode: full          # 或 lite
 docs_dir: .faststack
 ```
+
+## 两种模式
+
+流程本身在两种模式下一致（7 步 skill 链不变），mode 只影响各 skill 的询问深度与产出详略：
+
+| Skill | full（默认） | lite |
+| --- | --- | --- |
+| `fs-idea` | 含 MVP 规划 | 无 MVP，只要边界 |
+| `fs-req` | 功能 + 非功能 + 约束 + 验收标准 | 只要用户角色 + 功能 + 关键流程 |
+| `fs-prod` | 含数据与成功指标 | 去掉数据与指标 |
+| `fs-tasks` | 每条含验收标准，测试分散到各任务 | 不要验收标准，不拆测试任务 |
+| `fs-dev` | 跑 lint + typecheck + test（含 e2e） | 跑 lint + typecheck + 目视验证，**不写不跑测试** |
+| `fs-ui` / `fs-tech` / `fs-sync` | — | 无差异 |
+
+选择建议：个人小工具 / 原型 这类走 lite；正式产品、对外发布、团队协作走 full。
 
 **之后**：`fs-start` 会根据 `docs_dir` 下已有文档推荐下一步；或直接调用任一 skill（`$DOCS` 代表你配置的目录）：
 
@@ -58,9 +74,10 @@ docs_dir: .faststack
 | 字段 | 说明 | 默认 |
 | --- | --- | --- |
 | `version` | 配置文件版本，当前为 `1` | — |
+| `mode` | 流程模式：`full` 或 `lite`（不改变 skill 链，只影响询问深度和产出详略） | `full` |
 | `docs_dir` | FastStack 文档根目录（相对项目根） | `.faststack` |
 
-想换目录直接改 `docs_dir`，下次运行任一 skill 即生效。
+想换目录或切模式，改文件后下次运行任一 skill 即生效。
 
 ## 项目结构
 

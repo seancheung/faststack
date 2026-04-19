@@ -9,7 +9,9 @@ description: 生成设计规范 `{docs_dir}/design.md` 与静态 HTML 原型 `{d
 
 ## 读取配置
 
-读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）。所有路径都以此为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
+读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）和 `mode`（默认 `full`）。所有路径以 `docs_dir` 为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
+
+**lite 模式差异**：无。本 skill 在两种模式下产出一致。
 
 ## 变更检测
 

@@ -9,7 +9,9 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
 
 ## 读取配置
 
-读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）。所有路径都以此为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
+读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）和 `mode`（默认 `full`）。所有路径以 `docs_dir` 为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
+
+**lite 模式差异**：任务条目 **不要求** 验收标准（"质量要求"中验收标准条款作废）；**不拆测试任务、不把测试分散到功能任务**（fs-dev 在 lite 下不写不跑自动化测试）。
 
 ## 变更检测
 
