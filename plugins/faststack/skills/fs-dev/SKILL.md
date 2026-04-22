@@ -11,7 +11,7 @@ description: 按 `{docs_dir}/tasks.md` 中的任务清单执行开发,或传 `BU
 
 读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）和 `features`（未定义字段按 `false`）。所有路径以 `docs_dir` 为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
 
-**feature 开关**：无。本 skill 不受 features 影响。**不编写、不执行自动化测试**（含单元、集成、e2e）——测试与验收是 `fs-qa` 的职责。
+**feature 开关**：`auto_commit`（默认 `false`）。开启时每完成一条任务 / Bug 修复后自动 `git commit`,详见下方 **自动 commit** 段。**不编写、不执行自动化测试**（含单元、集成、e2e）——测试与验收是 `fs-qa` 的职责。
 
 ## 变更检测
 
@@ -132,6 +132,7 @@ description: 按 `{docs_dir}/tasks.md` 中的任务清单执行开发,或传 `BU
 
 - 在 `{docs_dir}/tasks.md` 把本任务的交付物 checkbox 打勾
 - 更新进度统计（如 "M1 · 项目初始化（3/5）"）
+- `features.auto_commit` 开启时,按 **自动 commit** 段提交本条变更
 - 向用户汇报：做了什么、动了哪些文件、下一条任务是什么
 
 ## Bug 修复流程（`fs-dev BUG-xxx`）
@@ -170,8 +171,59 @@ description: 按 `{docs_dir}/tasks.md` 中的任务清单执行开发,或传 `BU
 - 回写 `{docs_dir}/bugs.md`：
   - 状态改为 `✅ 已修待重测`
   - 填 `**修复**` 字段：动了哪些文件 / 一句话摘要 / 今天日期（若是"无法复现"场景，额外注明）
+- `features.auto_commit` 开启时,按 **自动 commit** 段提交本条变更
 - 告诉用户：改完了，切回 `fs-qa` 做重测；不要自己标 BUG 为"重测通过"
 - **不动** `tasks.md`（Bug 修复不是任务推进）
+
+## 自动 commit（`features.auto_commit: true` 时）
+
+开关开启时,在 Step 5 "收尾" 结束后追加一次 `git commit`。**关闭时(默认)跳过本段全部内容,fs-dev 不动 git。**
+
+### 前置检查（每次执行前跑一次,任一失败就本次全程禁用 auto_commit 并一句话告诉用户）
+
+- 项目根存在 `.git/` 目录（非 git 仓库 → 跳过）
+- `git status` 能正常返回（仓库损坏 / 权限问题 → 跳过）
+
+### 单条任务完成后
+
+`git add` 两类文件（**不要** `git add -A` / `.`,避免把用户未提交的其他工作一起带入）：
+
+- 本次任务修改 / 新增的 **代码文件路径**
+- `{docs_dir}/tasks.md`（**必加** —— 本次的 checkbox 勾选 + 进度统计更新必须进这个 commit）
+
+然后 `git commit -m "{T-xxx} {任务标题}"`（例：`T-101 登录 API 接口`）。**只 commit,不 push、不 amend、不 --no-verify**。
+
+### 单条 Bug 修复后（仅 Step 4 为"现象消失"或"无法复现"时）
+
+`git add` 两类文件：
+
+- 本次修复修改 / 新增的 **代码文件路径**
+- `{docs_dir}/bugs.md`（**必加** —— 状态变更 + `**修复**` 字段必须进这个 commit）
+
+然后 `git commit -m "fix({BUG-xxx}) {bug 一句话摘要}"`（例：`fix(BUG-001) 登录按钮点击无响应`）。自检失败（现象依然存在）时 **不 commit**。
+
+### 串行批量
+
+逐条跑完 Step 1-5,每条完成后立即按上面规则 commit 一次（即一条任务 / 一个 Bug = 一个 commit）。
+
+### 并行
+
+**子 agent 禁止动 git**（并发跑 git 会踩 `.git/index.lock`）。所有子 agent 返回后,主 fs-dev 在 汇总 阶段对整个并行批 **只 commit 一次**（聚合提交,避免文件重叠归属问题）:
+
+- **add 清单** = 所有 `✅ 完成` 任务 + `✅ 已修待重测` Bug 返回的"动了哪些文件"代码路径（去重） + `tasks.md`（批内含任务时） + `bugs.md`（批内含 Bug 时）
+- `❌ 失败` / `⚠️ 需决策` 条目返回的代码路径 **不加** —— 让它们留在工作区,由用户后续处理
+- **commit message** 聚合格式:
+  - 批内 ≤ 3 条:一行列出,分号分隔。例 `T-101 登录 API; T-103 仪表盘页面` / `T-105 用户设置; fix(BUG-001) 登录按钮无响应`
+  - 批内 > 3 条:标题 `批量提交: <N> 项` + body 按行列出每条 ID 与标题
+- 批内若 **没有任何** 成功条目（全员失败 / 需决策） → 不 commit,直接报告
+
+### 失败回退
+
+`git commit` 本身失败时（pre-commit hook 红 / 冲突 / 其他）:
+
+- **不** `--no-verify`、**不** `--amend`、**不** `reset`
+- 告诉用户：commit 失败 + 失败原因 + 手动处理建议（一般是修 hook 报错再自己 `git commit`）
+- 继续后续流程（checkbox 已勾、状态已写回,不受 commit 失败影响）
 
 ## 铁律
 
@@ -182,6 +234,7 @@ description: 按 `{docs_dir}/tasks.md` 中的任务清单执行开发,或传 `BU
 - **交付物未达就不打勾**：任一交付物 checkbox 未过就不要勾主任务，不要糊弄
 - **带原型的任务必须参考原型实现**
 - **Bug 修复不代跑重测**：Step 4 即使能自检到现象消失，也只把 bugs.md 状态改为 `✅ 已修待重测`，由 `fs-qa` 负责重测通过
+- **auto_commit 只做安全提交**：只 `git add` 明确知道自己动过的文件,绝不 `-A` / `.`;不 push、不 amend、不 `--no-verify`;非 git 仓库直接跳过
 
 ## 批量与并行
 
@@ -252,6 +305,7 @@ description: 按 `{docs_dir}/tasks.md` 中的任务清单执行开发,或传 `BU
 - 动任务 / BUG 范围外的代码
 - 动 tasks.md 的 `## 进度` 段（主 skill 职责）
 - 动除 tasks.md / bugs.md 之外的上游文档（design.md、technical.md 等）
+- 动 git（`commit` / `add` / `push` / `reset` 等） —— 并发会踩 index.lock,统一由主 skill 聚合后提交
 - 遇决策分歧（选型冲突、文档缺失、需求矛盾）自己拍板 —— **停下**,在简报里标 `⚠️ 需决策` 说明情况
 
 【返回】100 字以内简报:做了什么 / 动了哪些文件 / 自检结果 / 标签（`✅ 完成` / `❌ 失败` / `⚠️ 需决策` / `⚠️ 需重测`）。
@@ -261,7 +315,8 @@ description: 按 `{docs_dir}/tasks.md` 中的任务清单执行开发,或传 `BU
 
 所有 agent 返回后，主 fs-dev 依次:
 1. **重算并更新** `tasks.md` 的 `## 进度` 段（避免并发写竞态）
-2. 给用户一次性总结：每条的结果及下一步建议（`⚠️ 需决策` → 建议切回串行处理那一条；`❌ 失败` → 建议看子 agent 简报再决定）
+2. `features.auto_commit` 开启时,按 **自动 commit > 并行** 段对整个批做 **一次聚合 commit**（`❌ 失败` / `⚠️ 需决策` 条目不参与）
+3. 给用户一次性总结：每条的结果及下一步建议（`⚠️ 需决策` → 建议切回串行处理那一条；`❌ 失败` → 建议看子 agent 简报再决定）
 
 ### 风险与底线
 

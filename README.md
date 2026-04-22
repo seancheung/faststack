@@ -41,6 +41,7 @@ features:
   mvp_planning: false          # fs-idea：是否规划 MVP
   nfr: false                   # fs-req：是否收集非功能需求 / 约束
   business_analysis: false     # fs-prod：是否讨论产品价值 / 商业模式 / 成功指标
+  auto_commit: false           # fs-dev：每完成一条任务 / Bug 是否自动 git commit
 ```
 
 ## Features
@@ -52,8 +53,9 @@ features:
 | `mvp_planning` | 产出 MVP 规划(最小可行形态) | `fs-idea` |
 | `nfr` | 收集非功能需求 + 约束与假设 | `fs-req` |
 | `business_analysis` | 讨论产品价值 / 商业模式 / 成功指标,做商业视角的功能审查 | `fs-prod` |
+| `auto_commit` | 每完成一条任务 / Bug 修复自动 `git commit`（需 git 仓库,仅 commit 不 push） | `fs-dev` |
 
-`fs-ui` / `fs-tech` / `fs-tasks` / `fs-dev` / `fs-qa` / `fs-sync` 主流程不受 features 影响。测试与验收是 `fs-qa` 的独立职责,按需调用。
+`fs-ui` / `fs-tech` / `fs-tasks` / `fs-qa` / `fs-sync` 主流程不受 features 影响。测试与验收是 `fs-qa` 的独立职责,按需调用。
 
 **之后**：`fs-start` 会根据 `docs_dir` 下已有文档推荐下一步；或直接调用任一 skill（`$DOCS` 代表你配置的目录）：
 
@@ -101,6 +103,7 @@ features:
 | `features.mvp_planning` | fs-idea 是否产出 MVP 规划 | `false` |
 | `features.nfr` | fs-req 是否收集非功能需求 + 约束 | `false` |
 | `features.business_analysis` | fs-prod 是否讨论商业性内容(产品价值 / 商业模式 / 成功指标) | `false` |
+| `features.auto_commit` | fs-dev 每完成一条任务 / Bug 是否自动 `git commit`（仅 commit,不 push） | `false` |
 
 想换目录或启停某个 feature,改文件后下次运行任一 skill 即生效。未定义的 feature 字段按 `false` 处理。
 

@@ -18,6 +18,7 @@ description: FastStack 项目初始化与流程引导。首次运行引导用户
 - **`mvp_planning`** · fs-idea 产出 MVP 规划（最小可行形态）
 - **`nfr`** · fs-req 收集非功能需求（性能 / 安全 / 合规）+ 约束与假设
 - **`business_analysis`** · fs-prod 讨论产品价值 / 商业模式 / 成功指标,并启动商业视角的功能审查
+- **`auto_commit`** · fs-dev 每完成一条任务 / Bug 修复后自动 `git commit`（需项目已是 git 仓库）
 
 判断启发式：
 - "个人小工具 / 给自己用 / 原型验证" → 建议全关（保持默认）
@@ -46,6 +47,7 @@ features:
   mvp_planning: false          # fs-idea：MVP 规划
   nfr: false                   # fs-req：非功能需求 + 约束
   business_analysis: false     # fs-prod：产品价值 / 商业模式 / 成功指标
+  auto_commit: false           # fs-dev：每完成一条任务 / Bug 自动 git commit
 ```
 
 **4. 创建 `{docs_dir}/` 目录**，放一个 `README.md` 说明文件清单（fs-idea/req/prod/ui/tech/tasks 对应的产物）。
@@ -79,8 +81,9 @@ fs-idea → fs-req → fs-prod → fs-ui → fs-tech → fs-tasks → fs-dev →
 | `mvp_planning` | fs-idea 追问并产出 MVP 规划 | fs-idea 只要边界，不聊 MVP | `fs-idea` |
 | `nfr` | fs-req 收集非功能需求 + 约束假设 | fs-req 只收功能需求 | `fs-req` |
 | `business_analysis` | fs-prod 讨论商业内容 + 商业视角审查 | fs-prod 不讨论任何商业内容(产品价值 / 商业模式 / 指标),审查去掉商业视角 | `fs-prod` |
+| `auto_commit` | fs-dev 每完成一条任务 / Bug 后自动 `git commit` | fs-dev 不动 git,由用户自行提交 | `fs-dev` |
 
-`fs-ui` / `fs-tech` / `fs-tasks` / `fs-dev` / `fs-qa` / `fs-sync` 不受任何 feature 影响。测试与验收是 `fs-qa` 的独立职责。
+`fs-ui` / `fs-tech` / `fs-tasks` / `fs-qa` / `fs-sync` 不受任何 feature 影响。测试与验收是 `fs-qa` 的独立职责。
 
 ## 横切 skill
 
