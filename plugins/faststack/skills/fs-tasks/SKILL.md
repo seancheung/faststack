@@ -27,12 +27,12 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
 **存在则读（影响前端任务拆解与关联回溯）：**
 - `{docs_dir}/product.md` —— 功能 / 页面清单，用于关联 FR-xxx 与功能模块
 - `{docs_dir}/design.md` —— 设计规范，辅助判断前端组件工作量与拆分粒度
-- `{docs_dir}/prototype/README.md` —— P-ID 清单与对应页面名称；前端任务里的 `**原型**：P-xxx` 字段所列的 ID 必须出自这里（不要自行编号、也不要去逐个读 `prototype/*.html`）
+- `{docs_dir}/prototype/README.md` —— 原型说明，用于指定原型
 
 ## 拆解原则
 
 1. **颗粒度**：每个任务应能在 **单次对话** 内完成（约 15-60 分钟工作量）
-2. **可独立验收**：有明确的 Definition of Done
+2. **可独立完成**：有明确的 Definition of Done（由交付物 checkbox 体现）
 3. **依赖清晰**：标注前置任务 ID，下游才能判断可并行性
 4. **关联回溯**：每个任务写清楚它实现了哪些 FR-xxx / P-xxx / API
 5. **原型锚点**：前端 / UI 任务必须额外标注对应原型的 P-ID（若 `{docs_dir}/prototype/` 存在），一个任务涉及多个页面就列多个 ID
