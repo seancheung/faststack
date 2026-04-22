@@ -1,20 +1,17 @@
 ---
 name: fs-tasks
-description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆成可独立执行、可验收的小颗粒任务清单，供 fs-dev 按顺序开发。上游 fs-tech，下游 fs-dev。
+description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆成可独立执行、可追溯的小颗粒任务清单，供 fs-dev 按顺序开发；测试与验收由 fs-qa 负责。上游 fs-tech，下游 fs-dev。
 ---
 
 # fs-tasks — 任务拆解
 
-你是技术 Lead。基于 `{docs_dir}/technical.md` 把整个项目拆成一条 **可执行、可验收、可并行** 的任务流。
+你是技术 Lead。基于 `{docs_dir}/technical.md` 把整个项目拆成一条 **可执行、可追溯、可并行** 的任务流。
 
 ## 读取配置
 
 读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）和 `features`（未定义字段按 `false`）。所有路径以 `docs_dir` 为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
 
-**feature 开关**：
-- `features.acceptance_criteria = false`（默认）：任务条目 **不要求** 验收标准（"质量要求"里验收标准条款作废）
-- `features.tests = false`（默认）：**不拆测试任务、不把测试分散到功能任务**（对应 fs-dev 不写不跑自动化测试）
-- 两项都开启时：每任务写验收标准 + 把测试分散到各功能任务
+**feature 开关**：无。本 skill 不受 features 影响。任务层面不写验收标准、不拆测试任务——这些是 `fs-qa` 的职责。
 
 ## 变更检测
 
@@ -67,7 +64,7 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
   - [ ] `package.json` 含 Next 15 + TS
   - [ ] 本地 `pnpm dev` 可启动
   - [ ] 配置 ESLint + Prettier
-- **验收**：访问 http://localhost:3000 看到默认页
+  - [ ] 访问 http://localhost:3000 看到默认页
 
 ### T-002 · 配置数据库与 ORM
 - **依赖**：T-001
@@ -76,7 +73,7 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
   - [ ] Drizzle schema 定义 User / ...
   - [ ] 本地 docker-compose 启动 Postgres
   - [ ] `pnpm db:migrate` 能建表
-- **验收**：psql 连上能看到 users 表
+  - [ ] psql 连上能看到 users 表
 
 ---
 
@@ -86,7 +83,6 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
 - **依赖**：T-002
 - **关联**：FR-010, POST /api/auth/login
 - **交付物**：...
-- **验收**：...
 
 ### T-102 · 登录页前端
 - **依赖**：T-101
@@ -96,23 +92,22 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
   - [ ] 按原型实现登录表单（邮箱 / 密码 / 登录按钮）
   - [ ] 覆盖空态 / 加载 / 错误 / 受限 四种状态
   - [ ] 接入 POST /api/auth/login
-- **验收**：本地可走通登录流程，错误提示与原型一致
+  - [ ] 本地可走通登录流程
 
 ### T-103 · 仪表盘页面
 - **依赖**：T-102
 - **关联**：P-002, P-003
 - **原型**：P-002, P-003
 - **交付物**：...
-- **验收**：...
 ```
 
 ## 质量要求
 
 - 任务 ID 连号（T-001, T-002, ...），里程碑内按 100 起跳（T-101, T-201）
-- 每个任务必须有至少 1 条验收标准（仅 `acceptance_criteria` 开启时要求）
+- 每个任务必须有至少 1 条可验证的交付物 checkbox
 - 前端任务要关联 P-xxx，后端任务要关联 API，全栈任务两者都要
 - **前端 / UI 任务且 `{docs_dir}/prototype/` 存在时**：必须显式写一行 `**原型**：` 列出对应的 P-ID（多页面用逗号分隔，如 `P-001, P-002`）；不存在原型目录则省略
-- **不要** 把"写测试"作为独立任务放到最后，应分散到每个功能任务中（仅 `tests` 开启时适用）
+- **不要** 拆测试任务 —— 测试与验收完全由 `fs-qa` 负责
 
 ## 完成后
 

@@ -17,16 +17,13 @@ description: FastStack 项目初始化与流程引导。首次运行引导用户
 
 - **`mvp_planning`** · fs-idea 产出 MVP 规划（最小可行形态）
 - **`nfr`** · fs-req 收集非功能需求（性能 / 安全 / 合规）+ 约束与假设
-- **`acceptance_criteria`** · fs-req 每条 P0 需求写验收标准；fs-tasks 每个任务写验收标准
 - **`business_analysis`** · fs-prod 讨论产品价值 / 商业模式 / 成功指标,并启动商业视角的功能审查
-- **`tests`** · fs-tasks 把测试分散到功能任务；fs-dev 写 / 跑自动化测试（lint + typecheck + test）
 
 判断启发式：
 - "个人小工具 / 给自己用 / 原型验证" → 建议全关（保持默认）
 - "公司项目 / 正式产品 / 对外发布 / 团队协作" → 建议全开
-- 介于之间 → 至少开 `acceptance_criteria` 和 `tests`
 
-告诉用户：全部省略也 OK，之后随时改 `.faststack.yml` 即可。
+告诉用户：全部省略也 OK，之后随时改 `.faststack.yml` 即可。测试与验收不在 features 中——始终由 `fs-qa` 负责，按需调用。
 
 **2. 引导用户选择文档目录**：
 
@@ -48,9 +45,7 @@ docs_dir: .faststack
 features:
   mvp_planning: false          # fs-idea：MVP 规划
   nfr: false                   # fs-req：非功能需求 + 约束
-  acceptance_criteria: false   # fs-req & fs-tasks：验收标准
-  business_analysis: false       # fs-prod：产品价值 / 商业模式 / 成功指标
-  tests: false                 # fs-tasks & fs-dev：测试任务 / 自动化测试
+  business_analysis: false     # fs-prod：产品价值 / 商业模式 / 成功指标
 ```
 
 **4. 创建 `{docs_dir}/` 目录**，放一个 `README.md` 说明文件清单（fs-idea/req/prod/ui/tech/tasks 对应的产物）。
@@ -65,12 +60,16 @@ features:
    - 只有 `idea.md`：建议 `fs-req`
    - 有到 `product.md`：建议 `fs-ui` 或（纯后端）`fs-tech`
    - 有 `tasks.md`：建议 `fs-dev`
+   - `tasks.md` 大部分 / 全部完成且无 `qa.md`：建议 `fs-qa` 生成测试计划
+   - 有 `qa.md` 且含未执行用例：建议 `fs-qa` 继续执行
+   - `bugs.md` 中有 `❌ 待修`：建议 `fs-dev BUG-xxx` 处理
+   - `bugs.md` 中有 `✅ 已修待重测`：建议 `fs-qa` 重测
 4. **不要自己去生成文档或写代码**，把控制权交回对应 skill
 
 ## 标准流程
 
 ```
-fs-idea → fs-req → fs-prod → fs-ui → fs-tech → fs-tasks → fs-dev
+fs-idea → fs-req → fs-prod → fs-ui → fs-tech → fs-tasks → fs-dev → fs-qa
 ```
 
 ## Feature 差异速查
@@ -79,11 +78,9 @@ fs-idea → fs-req → fs-prod → fs-ui → fs-tech → fs-tasks → fs-dev
 | --- | --- | --- | --- |
 | `mvp_planning` | fs-idea 追问并产出 MVP 规划 | fs-idea 只要边界，不聊 MVP | `fs-idea` |
 | `nfr` | fs-req 收集非功能需求 + 约束假设 | fs-req 只收功能需求 | `fs-req` |
-| `acceptance_criteria` | fs-req / fs-tasks 每条都写验收标准 | 不要求验收标准 | `fs-req`, `fs-tasks` |
 | `business_analysis` | fs-prod 讨论商业内容 + 商业视角审查 | fs-prod 不讨论任何商业内容(产品价值 / 商业模式 / 指标),审查去掉商业视角 | `fs-prod` |
-| `tests` | 任务清单拆测试任务；fs-dev 写/跑自动化测试 | 任务不拆测试；fs-dev 只跑 lint + typecheck + 目视 | `fs-tasks`, `fs-dev`, `fs-sync` |
 
-`fs-ui` / `fs-tech` 不受任何 feature 影响。
+`fs-ui` / `fs-tech` / `fs-tasks` / `fs-dev` / `fs-qa` / `fs-sync` 不受任何 feature 影响。测试与验收是 `fs-qa` 的独立职责。
 
 ## 横切 skill
 
