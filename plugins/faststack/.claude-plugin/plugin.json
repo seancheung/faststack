@@ -1,6 +1,6 @@
 {
   "name": "faststack",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "从想法到上线的全流程 vibecoding 工具包：交互式生成需求 / 产品 / 设计 / 技术 / 任务文档，并按任务清单自动开发。",
   "author": {
     "name": "Sean Cheung",
