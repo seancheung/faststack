@@ -11,9 +11,9 @@ description: 生成设计规范 `{docs_dir}/design.md`、自包含预览页 `{do
 
 ## 读取配置
 
-读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）和 `mode`（默认 `full`）。所有路径以 `docs_dir` 为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
+读取项目根 `.faststack.yml`，解析 `docs_dir`（默认 `.faststack`）和 `features`（未定义字段按 `false`）。所有路径以 `docs_dir` 为前缀。若配置不存在，让用户先运行 `fs-start` 初始化。
 
-**lite 模式差异**：无，两种模式下产出一致。
+**feature 开关**：无。本 skill 不受任何 feature 影响。
 
 ## 变更检测
 

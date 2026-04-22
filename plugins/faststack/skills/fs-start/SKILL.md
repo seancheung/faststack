@@ -1,6 +1,6 @@
 ---
 name: fs-start
-description: FastStack 项目初始化与流程引导。首次运行引导用户选择模式（full / lite）与文档目录并创建 `.faststack.yml` 配置；之后作为流程总控，诊断当前阶段并推荐下一个 fs-* skill。流程本身在两种模式下一致，mode 只影响各 skill 的询问深度与产出详略。
+description: FastStack 项目初始化与流程引导。首次运行引导用户勾选 features（多选）与文档目录并创建 `.faststack.yml` 配置；之后作为流程总控，诊断当前阶段并推荐下一个 fs-* skill。流程本身不受 features 影响，开关只决定各 skill 的询问深度与产出详略。
 ---
 
 # fs-start — FastStack 启动向导
@@ -13,14 +13,20 @@ description: FastStack 项目初始化与流程引导。首次运行引导用户
 
 ### 如果配置不存在 → 走初始化流程
 
-**1. 引导用户选择模式**（`AskUserQuestion` 或直接问）：
+**1. 引导用户勾选 features**（`AskUserQuestion` 的多选模式，**默认全部不选**）：
 
-- **`full`**（默认 · 正式项目 / 团队协作 / 公开发布）
-  每阶段完整覆盖 MVP 规划、非功能需求、约束假设、验收标准、测试、数据指标
-- **`lite`**（个人项目 / 小工具 / 原型验证）
-  跳过 MVP / 非功能 / 约束 / 验收 / 测试 / 数据指标，只保留边界与核心功能
+- **`mvp_planning`** · fs-idea 产出 MVP 规划（最小可行形态）
+- **`nfr`** · fs-req 收集非功能需求（性能 / 安全 / 合规）+ 约束与假设
+- **`acceptance_criteria`** · fs-req 每条 P0 需求写验收标准；fs-tasks 每个任务写验收标准
+- **`business_analysis`** · fs-prod 讨论产品价值 / 商业模式 / 成功指标,并启动商业视角的功能审查
+- **`tests`** · fs-tasks 把测试分散到功能任务；fs-dev 写 / 跑自动化测试（lint + typecheck + test）
 
-判断启发式：描述"我想做个小工具给自己用" 之类 → 推荐 lite；"公司项目" / "要上线给用户" / 团队协作 → 推荐 full。
+判断启发式：
+- "个人小工具 / 给自己用 / 原型验证" → 建议全关（保持默认）
+- "公司项目 / 正式产品 / 对外发布 / 团队协作" → 建议全开
+- 介于之间 → 至少开 `acceptance_criteria` 和 `tests`
+
+告诉用户：全部省略也 OK，之后随时改 `.faststack.yml` 即可。
 
 **2. 引导用户选择文档目录**：
 
@@ -28,18 +34,23 @@ description: FastStack 项目初始化与流程引导。首次运行引导用户
 - `docs/`（公开目录 · 适合开源项目）
 - 自定义路径
 
-**3. 写入 `.faststack.yml`**：
+**3. 写入 `.faststack.yml`**（未勾选的 feature 也显式写 `false`，便于用户之后看到有哪些开关）：
 
 ```yaml
 # FastStack 配置
 # 文档: https://github.com/seancheung/faststack
 version: 1
 
-# 模式：full（完整流程）或 lite（简化询问与产出，流程不变）
-mode: full
-
 # FastStack 生成的所有文档会放在这个目录下
 docs_dir: .faststack
+
+# 各 feature 开关；默认全关 = 最精简流程
+features:
+  mvp_planning: false          # fs-idea：MVP 规划
+  nfr: false                   # fs-req：非功能需求 + 约束
+  acceptance_criteria: false   # fs-req & fs-tasks：验收标准
+  business_analysis: false       # fs-prod：产品价值 / 商业模式 / 成功指标
+  tests: false                 # fs-tasks & fs-dev：测试任务 / 自动化测试
 ```
 
 **4. 创建 `{docs_dir}/` 目录**，放一个 `README.md` 说明文件清单（fs-idea/req/prod/ui/tech/tasks 对应的产物）。
@@ -48,7 +59,7 @@ docs_dir: .faststack
 
 ### 如果配置已存在 → 走路由流程
 
-1. 解析 `docs_dir` 和 `mode`
+1. 解析 `docs_dir` 和 `features`（未定义的 feature 字段按 `false` 处理）
 2. 扫描 `{docs_dir}/` 下哪些文档已生成
 3. 根据缺失情况给出建议：
    - 只有 `idea.md`：建议 `fs-req`
@@ -56,23 +67,23 @@ docs_dir: .faststack
    - 有 `tasks.md`：建议 `fs-dev`
 4. **不要自己去生成文档或写代码**，把控制权交回对应 skill
 
-## 标准流程（两种模式共用）
+## 标准流程
 
 ```
 fs-idea → fs-req → fs-prod → fs-ui → fs-tech → fs-tasks → fs-dev
 ```
 
-## 两种模式的差异速查
+## Feature 差异速查
 
-| Skill | full | lite |
-| --- | --- | --- |
-| `fs-idea` | 含 MVP 规划 | 无 MVP，只要边界 |
-| `fs-req` | 功能 + 非功能 + 约束 + 验收标准 | 只要用户角色 + 功能清单 + 关键流程 |
-| `fs-prod` | 含数据与成功指标 | 去掉数据与指标 |
-| `fs-ui` | 不变 | 不变 |
-| `fs-tech` | 不变 | 不变 |
-| `fs-tasks` | 每条含验收标准，测试分散到各任务 | 不要验收标准，不拆测试任务 |
-| `fs-dev` | 跑 lint + typecheck + test（含 e2e） | 跑 lint + typecheck + 目视验证，**不写不跑测试** |
+| Feature | 开启时 | 关闭时（默认） | 影响 skill |
+| --- | --- | --- | --- |
+| `mvp_planning` | fs-idea 追问并产出 MVP 规划 | fs-idea 只要边界，不聊 MVP | `fs-idea` |
+| `nfr` | fs-req 收集非功能需求 + 约束假设 | fs-req 只收功能需求 | `fs-req` |
+| `acceptance_criteria` | fs-req / fs-tasks 每条都写验收标准 | 不要求验收标准 | `fs-req`, `fs-tasks` |
+| `business_analysis` | fs-prod 讨论商业内容 + 商业视角审查 | fs-prod 不讨论任何商业内容(产品价值 / 商业模式 / 指标),审查去掉商业视角 | `fs-prod` |
+| `tests` | 任务清单拆测试任务；fs-dev 写/跑自动化测试 | 任务不拆测试；fs-dev 只跑 lint + typecheck + 目视 | `fs-tasks`, `fs-dev`, `fs-sync` |
+
+`fs-ui` / `fs-tech` 不受任何 feature 影响。
 
 ## 横切 skill
 
@@ -81,5 +92,5 @@ fs-idea → fs-req → fs-prod → fs-ui → fs-tech → fs-tasks → fs-dev
 ## 不要做的事
 
 - 不要一次性跑完整个流程，每步在对应 skill 交互确认
-- 不要修改已有的 `.faststack.yml`（除非用户明确要切模式 / 换目录）
+- 不要修改已有的 `.faststack.yml`（除非用户明确要换目录 / 启停某个 feature）
 - 不要越俎代庖直接生成需求或代码

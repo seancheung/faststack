@@ -32,28 +32,32 @@ fs-idea  →  fs-req  →  fs-prod  →  fs-ui  →  fs-tech  →  fs-tasks  →
 
 ## 使用
 
-**第一次使用**：输入 `/fs-start`，它会引导你选择 **模式**（full / lite）和 **文档目录**（默认 `.faststack/`），并在项目根生成 `.faststack.yml`：
+**第一次使用**：输入 `/fs-start`，它会引导你勾选要启用的 **features**（默认全不选，对应最精简流程）和 **文档目录**（默认 `.faststack/`），并在项目根生成 `.faststack.yml`：
 
 ```yaml
 version: 1
-mode: full          # 或 lite
 docs_dir: .faststack
+features:
+  mvp_planning: false          # fs-idea：是否规划 MVP
+  nfr: false                   # fs-req：是否收集非功能需求 / 约束
+  acceptance_criteria: false   # fs-req & fs-tasks：是否写验收标准
+  business_analysis: false       # fs-prod：是否讨论产品价值 / 商业模式 / 成功指标
+  tests: false                 # fs-tasks & fs-dev：是否拆测试任务、写跑自动化测试
 ```
 
-## 两种模式
+## Features
 
-流程本身在两种模式下一致（7 步 skill 链不变），mode 只影响各 skill 的询问深度与产出详略：
+流程本身不受 features 影响（7 步 skill 链不变），开关只决定各 skill 的询问深度与产出详略。**默认全关 = 最精简**,适合个人小工具 / 原型验证;正式产品 / 对外发布 / 团队协作建议全开。
 
-| Skill | full（默认） | lite |
+| Feature | 作用 | 影响 skill |
 | --- | --- | --- |
-| `fs-idea` | 含 MVP 规划 | 无 MVP，只要边界 |
-| `fs-req` | 功能 + 非功能 + 约束 + 验收标准 | 只要用户角色 + 功能 + 关键流程 |
-| `fs-prod` | 含数据与成功指标 | 去掉数据与指标 |
-| `fs-tasks` | 每条含验收标准，测试分散到各任务 | 不要验收标准，不拆测试任务 |
-| `fs-dev` | 跑 lint + typecheck + test（含 e2e） | 跑 lint + typecheck + 目视验证，**不写不跑测试** |
-| `fs-ui` / `fs-tech` / `fs-sync` | — | 无差异 |
+| `mvp_planning` | 产出 MVP 规划(最小可行形态) | `fs-idea` |
+| `nfr` | 收集非功能需求 + 约束与假设 | `fs-req` |
+| `acceptance_criteria` | 每条 P0 需求 / 每个任务写验收标准 | `fs-req`, `fs-tasks` |
+| `business_analysis` | 讨论产品价值 / 商业模式 / 成功指标,做商业视角的功能审查 | `fs-prod` |
+| `tests` | 任务清单拆测试任务;开发时写 / 跑自动化测试 | `fs-tasks`, `fs-dev`, `fs-sync` |
 
-选择建议：个人小工具 / 原型 这类走 lite；正式产品、对外发布、团队协作走 full。
+`fs-ui` / `fs-tech` / `fs-sync` 主流程不受 features 影响(`fs-sync` 仅在更新任务清单时参考 `tests`)。
 
 **之后**：`fs-start` 会根据 `docs_dir` 下已有文档推荐下一步；或直接调用任一 skill（`$DOCS` 代表你配置的目录）：
 
@@ -84,10 +88,14 @@ docs_dir: .faststack
 | 字段 | 说明 | 默认 |
 | --- | --- | --- |
 | `version` | 配置文件版本，当前为 `1` | — |
-| `mode` | 流程模式：`full` 或 `lite`（不改变 skill 链，只影响询问深度和产出详略） | `full` |
 | `docs_dir` | FastStack 文档根目录（相对项目根） | `.faststack` |
+| `features.mvp_planning` | fs-idea 是否产出 MVP 规划 | `false` |
+| `features.nfr` | fs-req 是否收集非功能需求 + 约束 | `false` |
+| `features.acceptance_criteria` | fs-req / fs-tasks 是否写验收标准 | `false` |
+| `features.business_analysis` | fs-prod 是否讨论商业性内容(产品价值 / 商业模式 / 成功指标) | `false` |
+| `features.tests` | fs-tasks / fs-dev 是否拆测试任务、写跑自动化测试 | `false` |
 
-想换目录或切模式，改文件后下次运行任一 skill 即生效。
+想换目录或启停某个 feature,改文件后下次运行任一 skill 即生效。未定义的 feature 字段按 `false` 处理。
 
 ## 项目结构
 
