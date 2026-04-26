@@ -62,7 +62,7 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
 - **关联**：ADR-001, ADR-003
 - **交付物**：
   - [ ] `package.json` 含 Next 15 + TS
-  - [ ] 本地 `pnpm dev` 可启动
+  - [ ] 本地 `npm run dev` 可启动
   - [ ] 配置 ESLint + Prettier
   - [ ] 访问 http://localhost:3000 看到默认页
 
@@ -72,7 +72,7 @@ description: 生成任务拆解文档 `{docs_dir}/tasks.md`。把技术设计拆
 - **交付物**：
   - [ ] Drizzle schema 定义 User / ...
   - [ ] 本地 docker-compose 启动 Postgres
-  - [ ] `pnpm db:migrate` 能建表
+  - [ ] `npm run db:migrate` 能建表
   - [ ] psql 连上能看到 users 表
 
 ---

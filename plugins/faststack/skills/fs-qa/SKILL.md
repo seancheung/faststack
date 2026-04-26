@@ -155,13 +155,13 @@ description: 测试与验收。`{docs_dir}/qa.md` 不存在时交互式询问测
 按用例 `执行者` 字段分流：
 
 - **`user` 型**（手工 / 目视 / 探索 / 手工验收）：agent **不代劳**。把步骤和预期完整念给用户,必要时先帮忙启动 dev server 或打开原型（见下文"dev server 生命周期"）,然后 **等用户操作并反馈结果**；用户没给结论前,不要填"实际"和"结果"(保持 ⏳)
-- **`agent` 型**（单元 / 集成 / e2e / 自动化验收 / 性能 / 安全）：直接运行对应命令（如 `pnpm test <path>` / `pnpm e2e <spec>`），解析 stdout / 退出码；失败时保留原始输出供复盘
+- **`agent` 型**（单元 / 集成 / e2e / 自动化验收 / 性能 / 安全）：直接运行对应命令（如 `npm run test <path>` / `npm run e2e <spec>`），解析 stdout / 退出码；失败时保留原始输出供复盘
 
 #### dev server 生命周期
 
 多条用例往往共用一个 dev server,启一次就好,不要每条都重启:
 
-- **第一次需要时启动**:用 Bash 的 `run_in_background` 起(如 `pnpm dev`);告诉用户实际 URL 和启动日志要点
+- **第一次需要时启动**:用 Bash 的 `run_in_background` 起(如 `npm run dev`);告诉用户实际 URL 和启动日志要点
 - **批次结束 / 会话结束 / 用户说"停一下"时**:提示用户"dev server 还在后台跑,要不要我停掉?"——由用户拍板,不要 agent 擅自 kill
 - **跨 skill 切换**:切走去 `fs-dev` / `fs-sync` 前也要提示 dev server 去留
 - **用户中途改代码**:告知用户"dev 是热重载 / 需要重启",由用户决定
